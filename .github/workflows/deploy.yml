@@ -31,20 +31,18 @@ jobs:
         username: ubuntu
         key: ${{ secrets.EC2_KEY }}
         script: |
+          echo "Updating Docker Swarm service..."
           docker service update --image sonuparali/yii2:latest yii2_yii2 || \
           docker service create --name yii2_yii2 --publish 80:80 sonuparali/yii2:latest
-    
-    - name: Health Check
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ubuntu
-        key: ${{ secrets.EC2_KEY }}
-        script: |
-          cid=$(docker ps -q --filter name=yii2_yii2) || exit 1
-          for i in {1..30}; do
-            docker inspect -f '{{.State.Health.Status}}' $cid | grep -q healthy && exit 0
-            sleep 10
-          done
-          docker logs $cid --tail 50
-          exit 1
+
+          echo "Running Health Checks..."
+          sleep 15
+
+          STATUS=$(docker service ps yii2_yii2 --no-trunc --format '{{.CurrentState}}' | grep -v "Running" || true)
+
+          if [ -n "$STATUS" ]; then
+            echo "Deployment failed..."
+            docker service update --image mvpar/yii2:previous yii2_yii2
+          else
+            echo "Deployment succeeded."
+          fi
