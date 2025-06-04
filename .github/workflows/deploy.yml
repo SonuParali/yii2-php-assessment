@@ -34,37 +34,16 @@ jobs:
           docker service update --image sonuparali/yii2:latest yii2_yii2 || \
           docker service create --name yii2_yii2 --publish 80:80 sonuparali/yii2:latest
     
-    - name: Verify Service Health
+    - name: Health Check
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ubuntu
         key: ${{ secrets.EC2_KEY }}
         script: |
-          echo "Starting health check verification (50s intervals)..."
           for i in {1..6}; do
-            CONTAINER_ID=$(docker ps -q --filter name=yii2_yii2)
-            
-            if [ -z "$CONTAINER_ID" ]; then
-              echo "Container not found. Waiting..."
-              sleep 50
-              continue
-            fi
-
-            HEALTH_STATUS=$(docker inspect --format='{{.State.Health.Status}}' $CONTAINER_ID)
-            echo "Attempt $i/6 - Status: $HEALTH_STATUS"
-            
-            if [ "$HEALTH_STATUS" = "healthy" ]; then
-              echo "Service is healthy!"
-              exit 0
-            fi
-            
-            if [ $i -eq 6 ]; then
-              echo "Health check failed after 5 minutes"
-              echo "Last logs:"
-              docker logs $CONTAINER_ID --tail 50
-              exit 1
-            fi
-            
-            sleep 50
+            STATUS=$(docker inspect --format '{{.State.Health.Status}}' $(docker ps -q))
+            [ "$STATUS" = "healthy" ] && exit 0
+            sleep 10
           done
+          exit 1
