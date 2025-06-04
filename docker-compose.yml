@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  yii2:
+    build: .
+    image: mvpar/yii2:latest
+    networks:
+      - yii2net
+    deploy:
+      mode: replicated
+      replicas: 1
+
+networks:
+  yii2net:
+    driver: overlay

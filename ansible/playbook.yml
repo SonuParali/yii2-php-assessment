@@ -1,0 +1,44 @@
+---
+- name: Setup EC2 Instance for Yii2 Deployment
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Install required packages
+      apt:
+        name: ['docker.io', 'docker-compose', 'nginx', 'git']
+        state: present
+        update_cache: true
+
+    - name: Enable and start Docker
+      systemd:
+        name: docker
+        enabled: true
+        state: started
+
+    - name: Add user to docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: true
+
+    - name: Initialize Docker Swarm
+      shell: docker swarm init || true
+
+    - name: Configure NGINX
+      copy:
+        src: ../nginx/yii2.conf
+        dest: /etc/nginx/sites-available/yii2
+        mode: '0644'
+
+    - name: Enable NGINX config
+      file:
+        src: /etc/nginx/sites-available/yii2
+        dest: /etc/nginx/sites-enabled/yii2
+        state: link
+        force: yes
+
+    - name: Restart NGINX
+      systemd:
+        name: nginx
+        state: restarted
