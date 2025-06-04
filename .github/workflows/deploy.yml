@@ -41,8 +41,8 @@ jobs:
           STATUS=$(docker service ps yii2_yii2 --no-trunc --format '{{.CurrentState}}' | grep -v "Running" || true)
 
           if [ -n "$STATUS" ]; then
-            echo "Deployment failed..."
-            docker service update --image mvpar/yii2:previous yii2_yii2
+            echo "Deployment Successful."
+            docker service update --image sonuparali/yii2:previous yii2_yii2
           else
-            echo "Deployment succeeded."
+            echo "Deployment failed."
           fi
