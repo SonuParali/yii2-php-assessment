@@ -35,14 +35,15 @@ jobs:
           docker service update --image sonuparali/yii2:latest yii2_yii2 || \
           docker service create --name yii2_yii2 --publish 80:80 sonuparali/yii2:latest
 
-          echo "Running Health Checks..."
+          echo "Waiting for service to stabilize..."
           sleep 15
 
           STATUS=$(docker service ps yii2_yii2 --no-trunc --format '{{.CurrentState}}' | grep -v "Running" || true)
 
           if [ -n "$STATUS" ]; then
-            echo "Deployment Successful."
-            docker service update --image sonuparali/yii2:previous yii2_yii2
+            echo "Health check failed. Some tasks are not running:"
+            docker service ps yii2_yii2
+            exit 1
           else
-            echo "Deployment failed."
+            echo "Deployment successful and health check passed."
           fi
