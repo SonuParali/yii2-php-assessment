@@ -6,7 +6,6 @@ RUN apt-get update && apt-get install -y \
 
 RUN a2enmod rewrite
 
-# If your Yii2 app is in root, copy everything
 COPY ./yii2 /var/www/html/
 
 WORKDIR /var/www/html
@@ -17,3 +16,6 @@ RUN sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/Allo
 
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html
+
+HEALTHCHECK --interval=10s --timeout=5s --start-period=15s --retries=3 \
+    CMD curl -f http://localhost/ || exit 1
