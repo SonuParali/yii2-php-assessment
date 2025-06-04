@@ -49,6 +49,6 @@ jobs:
             STATUS=$(docker inspect --format='{{json .Spec.TaskTemplate.ContainerSpec.HealthCheck}}' $(docker ps -q))
             echo "Health check config: $STATUS"
             curl -f http://localhost && echo "Health check passed!" && break || echo "Waiting..."
-            sleep 5
+            sleep 50
           done
 
