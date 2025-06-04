@@ -20,8 +20,8 @@ jobs:
 
     - name: 🐳 Build and Push Docker Image
       run: |
-        docker build -t mvpar/yii2:latest .
-        docker push mvpar/yii2:latest
+        docker build -t sonuparali/yii2:latest .
+        docker push sonuparali/yii2:latest
 
     - name: 🚀 Deploy via SSH to EC2
       uses: appleboy/ssh-action@master
@@ -30,6 +30,6 @@ jobs:
         username: ubuntu
         key: ${{ secrets.EC2_KEY }}
         script: |
-          docker service update --image mvpar/yii2:latest yii2_yii2 || \
-          docker service create --name yii2_yii2 --publish 80:80 mvpar/yii2:latest
+          docker service update --image sonuparali/yii2:latest yii2_yii2 || \
+          docker service create --name yii2_yii2 --publish 80:80 sonuparali/yii2:latest
 
