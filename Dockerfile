@@ -1,7 +1,7 @@
 FROM php:8.2-apache
 
 RUN apt-get update && apt-get install -y \
-    unzip git libzip-dev zip \
+    unzip git libzip-dev zip curl\
     && docker-php-ext-install pdo pdo_mysql zip
 
 RUN a2enmod rewrite

@@ -3,7 +3,7 @@ version: '3.8'
 services:
   yii2:
     build: .
-    image: mvpar/yii2:latest
+    image: sonuparali/yii2:latest
     networks:
       - yii2net
     deploy:
