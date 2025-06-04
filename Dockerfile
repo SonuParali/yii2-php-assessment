@@ -18,4 +18,5 @@ RUN sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/Allo
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html
 
-HEALTHCHECK --interval=50s --timeout=10s --start-period=10s CMD curl -f http://localhost || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost/ || exit 1
